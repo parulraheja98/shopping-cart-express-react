@@ -17,6 +17,9 @@ var createFetchLimiter = rateLimit({
 });
 // setting up rate limit for potential brute force attacks
 app.use(createFetchLimiter);
+const keyPublishable = '';
+const keySecret = '';
+const stripe = require('stripe')(keySecret);
 var handlebars = require('express-handlebars').create({
     defaultLayout: 'main',
     helpers: {
@@ -35,7 +38,7 @@ var handlebars = require('express-handlebars').create({
 });
 
 app.engine('handlebars', handlebars.engine);
-app.set('view engine', 'handlebars');
+app.set('view engine', 'pug');
 
 app.set('port', process.env.PORT || 3017);
 app.use(require('body-parser').urlencoded({extended: true}));
@@ -60,6 +63,25 @@ app.use(express.static(__dirname + '/public'));
  * Delete all the custom products , except the default products created on start
  automatically for testing
  */
+
+app.post('/charge' , (req,res) => {
+    stripe.customers.create({
+        email:req.body.stripeEmail,
+        source:'sk_test_QBJDIDtnHqZM0cV0u9ShK2y400vRfXDl9P'
+    }).then(customer => {
+        console.log('customer check 1');
+
+        console.log('customer check 2');
+        res.json({
+            completed:true
+        })
+
+    })
+
+
+})
+
+
 
 app.get('/deletecustomproducts', function (req, res) {
     product.remove({}, function (err, products) {

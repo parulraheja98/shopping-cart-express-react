@@ -8,6 +8,7 @@ import Checkout from './components/Checkout.js';
 import NavigationBar from './components/NavigationBar';
 import EmptyCart from './components/EmptyCart.js';
 import CreateProduct from './components/CreateProduct.js';
+import Payment from './components/Payment.js';
 
 
 class App extends Component {
@@ -22,6 +23,7 @@ class App extends Component {
           <Route exact path='/checkout' component={Checkout} />
           <Route exact path='/emptycart' component={EmptyCart} />
           <Route exact path='/createproduct' component={CreateProduct} />
+          <Route exact path='/paymentgateway' component={Payment} />
         </Switch>
         </div>
       </BrowserRouter>
