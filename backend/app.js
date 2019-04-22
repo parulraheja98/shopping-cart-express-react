@@ -1,5 +1,7 @@
 var express = require('express'),
-    handlebars = require('express-handlebars').create({defaultLayout: 'main'});
+    handlebars = require('express-handlebars').create({
+        defaultLayout: 'main'
+    });
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://mongo:27017/newdock');
 
@@ -14,21 +16,20 @@ var productController = require('./controllers/product.js');
 var createFetchLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 min window
     max: 200, // start blocking after 100 requests
-    message:
-        "Too many requests , don't try to brute force hahaha"
+    message: "Too many requests , don't try to brute force hahaha"
 });
 // setting up rate limit for potential brute force attacks
 app.use(createFetchLimiter);
 var handlebars = require('express-handlebars').create({
     defaultLayout: 'main',
     helpers: {
-        debug: function () {
+        debug: function() {
             console.log("Current Context");
             console.log("=================");
             console.log(this);
             return null
         },
-        section: function (name, options) {
+        section: function(name, options) {
             if (!this._sections) this._sections = {};
             this._sections[name] = options.fn(this);
             return null;
@@ -40,7 +41,9 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 app.set('port', process.env.PORT || 3017);
-app.use(require('body-parser').urlencoded({extended: true}));
+app.use(require('body-parser').urlencoded({
+    extended: true
+}));
 app.use(require('body-parser').json());
 app.set('trust proxy', 1)
 app.use(
@@ -48,13 +51,18 @@ app.use(
         secret: 'keyboard cat',
         name: 'session',
         keys: ['key1', 'key2'],
-        cookie: {secure: false}
+        cookie: {
+            secure: false
+        }
 
     }))
 
-    app.use(cors({credentials: true, origin: 'http://172.18.0.1:3000'}));
+app.use(cors({
+    credentials: true,
+    origin: 'http://172.18.0.1:3000'
+}));
 
-    app.use(require('cookie-parser')(credentials.cookieSecret));
+app.use(require('cookie-parser')(credentials.cookieSecret));
 
 app.use(express.static(__dirname + '/public'));
 
@@ -63,7 +71,7 @@ app.use(express.static(__dirname + '/public'));
  automatically for testing
  */
 
-app.get('/deletecustomproducts',productController.deletecustomproducts);
+app.get('/deletecustomproducts', productController.deletecustomproducts);
 /**
  * Let the user create custom products
  *
@@ -76,7 +84,7 @@ app.post('/createcustomproduct', productController.createcustomproduct);
  *
  */
 
-app.get('/createsampleproducts' , productController.createsampleproducts);
+app.get('/createsampleproducts', productController.createsampleproducts);
 
 
 /**
@@ -87,13 +95,18 @@ app.get('/createsampleproducts' , productController.createsampleproducts);
  * having inventory
  *
  */
-app.get('/fetchproducts/:check', function (req, res) {
+app.get('/fetchproducts/:check', function(req, res) {
     if (req.params.check === 'available') {
-        product.find({inventory_count: {$gt: 0}}, function (err, products) {
-            res.render("displayProducts", {productsForDisplay: products});
+        product.find({
+            inventory_count: {
+                $gt: 0
+            }
+        }, function(err, products) {
+            res.render("displayProducts", {
+                productsForDisplay: products
+            });
         })
-    }
-    else {
+    } else {
         res.render('404');
     }
 })
@@ -122,12 +135,12 @@ app.post('/updatecart', cartController.updatecart)
  */
 
 
-app.get('/cart/clear', function (req, res) {
+app.get('/cart/clear', function(req, res) {
     req.session.cart = null;
     res.render('emptycart');
 })
 
-app.get('/sessioninfo',(req,res) => {
+app.get('/sessioninfo', (req, res) => {
     res.send(req.session);
 })
 
@@ -139,7 +152,7 @@ app.get('/sessioninfo',(req,res) => {
  */
 
 
-app.get('/cartpage',cartController.cartpage);
+app.get('/cartpage', cartController.cartpage);
 
 
 /*
@@ -150,10 +163,10 @@ app.get('/cartpage',cartController.cartpage);
  *  If cart session is empty , create cart session by adding the product with id
  */
 
-app.get('/cart/add/:id',productController.addToCart);
+app.get('/cart/add/:id', productController.addToCart);
 
 
-app.get('/clearsession',function(req,res) {
+app.get('/clearsession', function(req, res) {
     req.session = null;
     res.send(req.session);
 })
@@ -168,26 +181,26 @@ app.get('/clearsession',function(req,res) {
 
 app.get('/checkoutpage', cartController.checkoutpage);
 
-app.get('/productpage',productController.productpage);
+app.get('/productpage', productController.productpage);
 
-app.get('/test' , function(req,res) {
+app.get('/test', function(req, res) {
     res.json({
-        testing:'check'
+        testing: 'check'
     })
 })
 
 
-app.use(function (req, res) {
+app.use(function(req, res) {
     res.status(404);
     res.render('404');
 })
 
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
     console.log(err.stack);
     res.status(500);
     res.render('500');
 })
 
-app.listen(app.get('port'), function () {
+app.listen(app.get('port'), function() {
     console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate');
 });
