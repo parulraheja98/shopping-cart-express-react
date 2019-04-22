@@ -40,8 +40,6 @@ var updatecart = (req, res, next) => {
                 cartinf.items.splice(count - counter, 1);
                 counter++;
                 testCheck = true;
-
-
             }
             /*
             Total Price is decreased because quantity is decreased
@@ -74,14 +72,9 @@ var updatecart = (req, res, next) => {
                     contentcart(req, res, next);
 
                 }
-
-
             }
         })
     })
-
-
-
 }
 
 
@@ -120,7 +113,6 @@ var cartpage = (req, res, next) => {
                     navigateCart(req, res, next, checkingavailability);
 
             })
-
         })
 
     } else {
@@ -170,10 +162,6 @@ var checkoutpage = (req, res, next) => {
             message: 'inventory error '
         })
     }
-
-
-
-
 }
 
 

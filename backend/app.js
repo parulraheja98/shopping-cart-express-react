@@ -77,7 +77,6 @@ app.get('/deletecustomproducts', productController.deletecustomproducts);
  *
  */
 
-
 app.post('/createcustomproduct', productController.createcustomproduct);
 /**
  * Create Sample Products for testing
@@ -95,22 +94,7 @@ app.get('/createsampleproducts', productController.createsampleproducts);
  * having inventory
  *
  */
-app.get('/fetchproducts/:check', function(req, res) {
-    if (req.params.check === 'available') {
-        product.find({
-            inventory_count: {
-                $gt: 0
-            }
-        }, function(err, products) {
-            res.render("displayProducts", {
-                productsForDisplay: products
-            });
-        })
-    } else {
-        res.render('404');
-    }
-})
-
+app.get('/fetchproducts/:check', productController.productWithInventory);
 /**
  * Get all the products created with or without inventory
  * Displays the title , price and inventory of product
@@ -134,7 +118,6 @@ app.post('/updatecart', cartController.updatecart)
  * Removes the session data of the cart
  */
 
-
 app.get('/cart/clear', function(req, res) {
     req.session.cart = null;
     res.render('emptycart');
@@ -144,13 +127,11 @@ app.get('/sessioninfo', (req, res) => {
     res.send(req.session);
 })
 
-
 /**
  * Displays the cart information
  * Cart total price , added products
  * Checkout button is visible if products are in stock
  */
-
 
 app.get('/cartpage', cartController.cartpage);
 
@@ -165,7 +146,6 @@ app.get('/cartpage', cartController.cartpage);
 
 app.get('/cart/add/:id', productController.addToCart);
 
-
 app.get('/clearsession', function(req, res) {
     req.session = null;
     res.send(req.session);
@@ -178,17 +158,15 @@ app.get('/clearsession', function(req, res) {
  * Cart Session is deleted after successful checkout
  */
 
-
 app.get('/checkoutpage', cartController.checkoutpage);
 
-app.get('/productpage', productController.productpage);
+app.get('/productpage', productController.createsampleproducts);
 
 app.get('/test', function(req, res) {
     res.json({
         testing: 'check'
     })
 })
-
 
 app.use(function(req, res) {
     res.status(404);

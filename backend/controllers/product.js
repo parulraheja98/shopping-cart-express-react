@@ -45,7 +45,6 @@ addToCart = (req, res, next) => {
                 }
             })
 
-
             if (check) {
                 var update_price = cart_total_price + re[0].price;
                 var create_new_cart_item = {
@@ -62,20 +61,17 @@ addToCart = (req, res, next) => {
                 req.session.cart.items[get_index_of_item].quantity += 1;
                 req.session.cart.total_price = update_price;
 
-
             }
         }
 
         res.json({
             completed: true
         });
-
-
     })
-
 }
 
 createsampleproducts = (req, res, next) => {
+    console.log('test here 1');
     var products = [{
             title: 'test-product-1',
             price: 20,
@@ -103,16 +99,13 @@ createsampleproducts = (req, res, next) => {
         );
 
         if (i == products.length - 1)
-            productsCreated(req, res, next);
+            fetchproducts(req, res, next);
 
 
     })
 
 }
 
-productsCreated = (req, res, next) => {
-    res.redirect(303, '/fetchproducts');
-}
 
 fetchproducts = (req, res, next) => {
     product.find({}, function(err, prod) {
@@ -137,7 +130,7 @@ createcustomproduct = (req, res, next) => {
                 inventory_count: parseInt(req.body.inventory)
             });
             newproduct.save();
-            res.redirect('/fetchproducts');
+            fetchproducts(req,res,next);
         } else {
             res.json({
                 message: 'product already exists'
@@ -146,9 +139,6 @@ createcustomproduct = (req, res, next) => {
     })
 }
 
-productpage = (req, res, next) => {
-    res.redirect(303, '/createsampleproducts');
-}
 
 deletecustomproducts = (req, res, next) => {
     product.remove({}, function(err, products) {
@@ -164,13 +154,30 @@ deletecustomproducts = (req, res, next) => {
     })
 }
 
+productWithInventory = (req,res,next) => {
+    if (req.params.check === 'available') {
+        product.find({
+            inventory_count: {
+                $gt: 0
+            }
+        }, function(err, products) {
+            res.render("displayProducts", {
+                productsForDisplay: products
+            });
+        })
+    } else {
+        window.location.href='/notfound';
+    }
+
+}
+
+
 module.exports = {
     deletecustomproducts,
-    productpage,
     createcustomproduct,
     fetchproducts,
-    productsCreated,
     createsampleproducts,
+    productWithInventory,
     addToCart
 
 }
