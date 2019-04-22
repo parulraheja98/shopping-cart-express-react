@@ -23,7 +23,7 @@ class App extends Component {
           <Route exact path='/checkout' component={Checkout} />
           <Route exact path='/emptycart' component={EmptyCart} />
           <Route exact path='/createproduct' component={CreateProduct} />
-          <Route exact path='/notfound' component={NotFound} />
+          <Route path='*' component={NotFound} />
         </Switch>
         </div>
       </BrowserRouter>
