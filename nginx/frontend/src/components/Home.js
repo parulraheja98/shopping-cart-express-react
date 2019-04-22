@@ -31,7 +31,7 @@ handleAddToCart(id) {
 }
 
 componentDidMount(){ 
-    fetch('/testing')
+    fetch('/productpage')
     .then(response => response.json())
     .then(data => {
         console.log(data.productsForDisplay[0]._id);
