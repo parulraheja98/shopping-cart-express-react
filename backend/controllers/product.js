@@ -6,12 +6,6 @@ addToCart = (req, res, next) => {
     var price = "";
     product.find({
         _id: req.params.id
-    }, function(err, prod) {
-        if (err) {
-            console.log('debugger 2');
-        }
-        return prod;
-
     }).then(function(re) {
         // if cart session undefined create new session
         if (req.session.cart == undefined) {
@@ -67,6 +61,11 @@ addToCart = (req, res, next) => {
         res.json({
             completed: true
         });
+    })
+    .catch((err) => {
+       res.status(500).json({
+           error:err.message
+       });
     })
 }
 
@@ -161,7 +160,7 @@ productWithInventory = (req,res,next) => {
                 $gt: 0
             }
         }, function(err, products) {
-            res.render("displayProducts", {
+            res.json({
                 productsForDisplay: products
             });
         })

@@ -4,7 +4,7 @@ var chai = require('chai')
     , chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/d45');
+mongoose.connect('mongodb://praheja:boldtest12345@ds163764.mlab.com:63764/shoppingcart');
 var product = require('../models/product.js');
 
 /**
@@ -12,21 +12,20 @@ var product = require('../models/product.js');
  *
  */
 
-describe('Invalid id of product added in cart/add ', function() {
+describe('Add Product with invalid Id  ', function() {
     this.timeout(5000);
     it('Should give an error message that we assert equal', function(done) {
-        product.findOne({} , function(err , r) {
-            return r;
-        }).then(function(product_with_id) {
-            console.log(product_with_id);
+        product.find({})
+        .then((res) => {
     chai.request(app)
-        .get('/cart/add/123')
-        .end(function(err,data) {
-            console.log(data.text);
-            assert.equal(data.text,'Invalid Id of Product Sent');
+        .get('/cart/add/5cb0ad2f1d25b397999af4f0')
+        .end((err,data) => {
+            assert(data.body.completed);
             done();
         })
-},done);
+
+    
+});
 
 });
 });

@@ -17,7 +17,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
-    "express-rate-limit": "^3.3.2",
+    "express-rate-limit": "^3.4.1",
     "md5": "2.2.1",
     "mocha-http": "^0.2.5",
     "mongoose": "^5.0.12"

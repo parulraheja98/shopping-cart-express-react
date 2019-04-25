@@ -3,7 +3,7 @@ var express = require('express'),
         defaultLayout: 'main'
     });
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://mongo:27017/newdock');
+mongoose.connect('mongodb://praheja:boldtest12345@ds163764.mlab.com:63764/shoppingcart');
 
 var app = express();
 var cors = require('cors');
@@ -168,16 +168,6 @@ app.get('/test', function(req, res) {
     })
 })
 
-app.use(function(req, res) {
-    res.status(404);
-    res.render('404');
-})
-
-app.use(function(err, req, res, next) {
-    console.log(err.stack);
-    res.status(500);
-    res.render('500');
-})
 
 app.listen(app.get('port'), function() {
     console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate');
