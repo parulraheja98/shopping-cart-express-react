@@ -12,4 +12,11 @@ services:
     build: ./backend/
     ports:
       - "3017:3017"
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"      
 

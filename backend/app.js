@@ -3,7 +3,7 @@ var express = require('express'),
         defaultLayout: 'main'
     });
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://praheja:boldtest12345@ds163764.mlab.com:63764/shoppingcart');
+mongoose.connect('mongodb://mongo:27017/newdock');
 
 var app = express();
 var cors = require('cors');
