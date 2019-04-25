@@ -106,3 +106,18 @@ describe( 'Create Product without inventory', function(){
     })
 });
 
+describe('Test Sample Products', function() {
+    this.timeout(5000);
+    it('Test Sample Products', function(done) {
+
+    chai.request(app)
+        .get('/createsampleproducts')
+        .end((err,data) => {
+            assert(data.body.productsForDisplay);
+            done();
+        })
+
+    
+
+});
+});

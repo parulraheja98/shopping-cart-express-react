@@ -148,7 +148,9 @@ app.get('/cart/add/:id', productController.addToCart);
 
 app.get('/clearsession', function(req, res) {
     req.session = null;
-    res.send(req.session);
+    res.json({
+        message:"Cart Clear Completed"
+    })
 })
 
 /**
