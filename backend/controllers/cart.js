@@ -157,7 +157,6 @@ var checkoutpage = (req, res, next) => {
             total_price: checkout_items.total_price
         })
     } else {
-        console.log('third stage');
         res.json({
             message: 'inventory error '
         })

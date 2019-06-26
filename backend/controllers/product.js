@@ -70,7 +70,6 @@ addToCart = (req, res, next) => {
 }
 
 createsampleproducts = (req, res, next) => {
-    console.log('test here 1');
     var products = [{
             title: 'test-product-1',
             price: 20,
