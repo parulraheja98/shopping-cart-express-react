@@ -18,15 +18,10 @@ componentDidMount(){
     .then(response => response.json())
     .then(data => {
         if(data.message) {
-            console.log('uw test completes here ');
             this.props.history.push('/emptycart');
-            
         }
         else 
         {
-        console.log('check data 1');
-        console.log(data);
-        console.log('check data 2');
         this.setState({checkoutitems:data.checkoutitems});
         this.setState({total_price:data.total_price});
         }
