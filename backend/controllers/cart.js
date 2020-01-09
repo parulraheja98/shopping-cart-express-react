@@ -120,7 +120,6 @@ var cartpage = (req, res, next) => {
         Message is displayed if navigated to cart with
         no products
          */
-        console.log('no products in the cart ');
         res.json({
             message: 'empty cart'
         })

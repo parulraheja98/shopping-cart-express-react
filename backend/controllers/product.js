@@ -1,181 +1,200 @@
-var product = require('../models/product.js');
+const product = require('../models/product.js');
 
-addToCart = (req, res, next) => {
+async function addProductToCart(id) {
+    return new Promise((resolve, reject) => {
+        product.find({ _id: id }, (err, resp) => {
+            if (err) reject(err);
+            else resolve(resp);
+        });
+    });
+}
 
-    var title = "";
-    var price = "";
-    product.find({
-        _id: req.params.id
-    }).then(function(re) {
+addToCart = async (req, res, next) => {
+    var title = '';
+    var price = '';
+    var productById = await addProductToCart(req.params.id);
+    if (productById) {
         // if cart session undefined create new session
-        if (req.session.cart == undefined) {
+        if (req.session.cart === undefined) {
             req.session.cart = {
                 items: [{
-                    title: re[0].title,
-                    price: re[0].price,
-                    inventory_count: re[0].inventory_count,
-                    quantity: 1
+                    title: productById[0].title,
+                    price: productById[0].price,
+                    inventory_count: productById[0].inventory_count,
+                    quantity: 1,
                 }],
                 inventory_available: true,
-                total_price: re[0].price
-            }
+                total_price: productById[0].price,
+            };
         } else {
             /*
-            Check if product exist in the cart
-            If Product exist in the cart update the quantity
-            If Product doesnot exist in create add the product
-            to cart with quantity of 1
-             */
+                Check if product exist in the cart
+                If Product exist in the cart update the quantity
+                If Product doesnot exist in create add the product
+                to cart with quantity of 1
+            */
 
-
-            var cart_total_price = req.session.cart.total_price;
-            var check = true;
+            var cartTotalPrice = req.session.cart.total_price;
+            let productInCart = false;
             var get_index_of_item;
             var check_cart_item = req.session.cart.items;
-            check_cart_item.forEach(function(item, i) {
-                if (item.title == re[0].title) {
-                    check = false;
+            check_cart_item.forEach((item, i) => {
+                if (item.title == productById[0].title) {
+                    productInCart = true;
                     get_index_of_item = i;
                 }
-            })
+            });
 
-            if (check) {
-                var update_price = cart_total_price + re[0].price;
-                var create_new_cart_item = {
-                    title: re[0].title,
-                    price: re[0].price,
-                    inventory_count: re[0].inventory_count,
-                    quantity: 1
-                }
-                req.session.cart.total_price = update_price;
-                req.session.cart.items.push(create_new_cart_item);
-            } else {
-                var update_price = cart_total_price + re[0].price;
-                update_price = Math.round(update_price * 100) / 100;
+            if (productInCart) {
+                var updatedPrice = cartTotalPrice + productById[0].price;
+                updatedPrice = Math.round(updatedPrice * 100) / 100;
                 req.session.cart.items[get_index_of_item].quantity += 1;
-                req.session.cart.total_price = update_price;
-
+                req.session.cart.total_price = updatedPrice;
+            } else {
+                var updatedPrice = cartTotalPrice + productById[0].price;
+                req.session.cart.total_price = updatedPrice;
+                req.session.cart.items.push({
+                    title: productById[0].title,
+                    price: productById[0].price,
+                    inventory_count: productById[0].inventory_count,
+                    quantity: 1,
+                });
             }
         }
-
         res.json({
-            completed: true
+            message: 'Cart Session Created'
+        })
+    } else {
+        res.status(500).json({
+            error: 'Product with the id doesnot exist',
         });
-    })
-    .catch((err) => {
-       res.status(500).json({
-           error:err.message
-       });
-    })
-}
+    }
+};
 
-createsampleproducts = (req, res, next) => {
-    var products = [{
-            title: 'test-product-1',
-            price: 20,
-            inventory_count: 10
-        },
-        {
-            title: 'test-product-2',
-            price: 10,
-            inventory_count: 20
-        },
-    ];
-
-    products.forEach(function(n, i) {
+async function createSampleProducts(prod) {
+    return new Promise((resolve, reject) => {
 
         product.update({
-                title: n.title
-            }, {
-                $setOnInsert: n
-            }, {
-                upsert: true
-            },
-            function(err, numAffected) {
-                console.log("Update Completed ");
-            }
-        );
+            title: prod.title,
+        }, {
+            $setOnInsert: prod,
+        }, {
+            upsert: true,
+        },
+            (err, prodUpdated) => {
+                console.log('Update Completed ');
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(prodUpdated)
+                }
 
-        if (i == products.length - 1)
-            fetchproducts(req, res, next);
-
-
-    })
+            })
+    });
 
 }
 
+createsampleproducts = async (req, res, next) => {
+    const products = [{
+        title: 'test-product-1',
+        price: 20,
+        inventory_count: 10,
+    },
+    {
+        title: 'test-product-2',
+        price: 10,
+        inventory_count: 20,
+    },
+    ];
+    for (prod of products) {
+        var createProduct = await createSampleProducts(prod);
+    }
+    const getAllProducts = await fetchProducts();
+    res.json(getAllProducts);
+};
 
-fetchproducts = (req, res, next) => {
-    product.find({}, function(err, prod) {
-        return res.json({
-            productsForDisplay: prod
+
+async function fetchProducts() {
+    return new Promise((resolve, reject) => {
+        product.find({}, (err, prod) => {
+            if (err) reject(err);
+            else resolve(prod);
+        });
+    });
+}
+
+async function findProductByTitle(title) {
+    return new Promise((resolve, reject) => {
+        product.find({ title }, (err, prod) => {
+            if (err) reject(err);
+            else {
+                resolve(prod)
+            }
         })
     })
 }
 
-createcustomproduct = (req, res, next) => {
+createcustomproduct = async (req, res, next) => {
+    const productExistWithTitle = await findProductByTitle(req.body.title);
+    if (!productExistWithTitle.length) {
+        newProduct = product({
+            title: req.body.title,
+            price: parseFloat(req.body.price),
+            inventory_count: parseInt(req.body.inventory),
+        });
+        newProduct.save();
+        res.json(await fetchProducts());
+    }
+    else {
+        res.json({
+            message: 'product already exists',
+        });
+    }
+};
 
-    product.find({
-        title: req.body.title
-    }, function(err, prod) {
 
-    }).then(function(resProduct) {
-
-        if (resProduct.length <= 0) {
-            newproduct = product({
-                title: req.body.title,
-                price: parseFloat(req.body.price),
-                inventory_count: parseInt(req.body.inventory)
+deletecustomproducts = (req, res) => {
+    product.remove({}, (err, products) => {
+        if (!err) {
+            res.status(200).json({
+                message: 'Custom product deleted',
             });
-            newproduct.save();
-            fetchproducts(req,res,next);
         } else {
-            res.json({
-                message: 'product already exists'
-            })
+            res.status(200).json({
+                message: 'Product Delete Failed',
+            });
         }
-    })
-}
+    });
+};
 
-
-deletecustomproducts = (req, res, next) => {
-    product.remove({}, function(err, products) {
-        if (!err)
-            res.json({
-                message: 'Custom product deleted'
-            })
-        else {
-            res.json({
-                message: 'Product Delete Failed'
-            })
-        }
-    })
-}
-
-productWithInventory = (req,res,next) => {
+productWithInventory = (req, res) => {
     if (req.params.check === 'available') {
         product.find({
             inventory_count: {
-                $gt: 0
+                $gt: 0,
+            },
+        }, (error, products) => {
+            if (error) {
+                res.status(500).json({
+                    error,
+                });
+            } else {
+                res.json({
+                    productsForDisplay: products,
+                });
             }
-        }, function(err, products) {
-            res.json({
-                productsForDisplay: products
-            });
-        })
+        });
     } else {
-        window.location.href='/notfound';
+        window.location.href = '/notfound';
     }
-
-}
+};
 
 
 module.exports = {
     deletecustomproducts,
     createcustomproduct,
-    fetchproducts,
     createsampleproducts,
     productWithInventory,
     addToCart
-
-}
+};

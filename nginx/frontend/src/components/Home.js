@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import {ListGroup,Table} from 'react-bootstrap';
+import {Table} from 'react-bootstrap';
 import '../App.css';
 
 class Home extends Component {
@@ -14,18 +14,8 @@ constructor(props) {
 
 handleAddToCart(id) {
 
-    console.log('debugger final 1');
-   console.log(id);
-    console.log('debugger final 2');
-    var url ='/cart/add/'+id;
-    console.log('url check');
-    console.log(url);
-    console.log('url check 1');
-    fetch(url,{credentials:'include'}).then(response => response.json())
+    fetch(`/cart/add/${id}`,{credentials:'include'}).then(response => response.json())
     .then(data => {
-        console.log('debugger final 100');
-        console.log(data);
-        console.log('debugger final 101');
         window.location.href='/cart';
     })
 }
@@ -34,9 +24,7 @@ componentDidMount(){
     fetch('/productpage')
     .then(response => response.json())
     .then(data => {
-        console.log(data.productsForDisplay[0]._id);
-        
-        this.setState({productsForDisplay:data.productsForDisplay});
+        this.setState({productsForDisplay: data});
     })
 
 }
