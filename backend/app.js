@@ -156,15 +156,6 @@ app.get('/checkoutpage', cartController.checkoutpage);
 
 app.get('/productpage', productController.createsampleproducts);
 
-app.get('/testinghere', productController.testinghere)
-
-app.get('/test', function(req, res) {
-    res.json({
-        testing: 'check'
-    })
-})
-
-
 app.listen(app.get('port'), function() {
     console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate');
 });

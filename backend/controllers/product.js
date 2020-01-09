@@ -168,14 +168,6 @@ deletecustomproducts = (req, res) => {
     });
 };
 
-testinghere = (req, res, next) => {
-    product.find({}, (err, prod) => {
-        res.json({
-            prod
-        })
-    });
-}
-
 productWithInventory = (req, res) => {
     if (req.params.check === 'available') {
         product.find({
@@ -204,6 +196,5 @@ module.exports = {
     createcustomproduct,
     createsampleproducts,
     productWithInventory,
-    addToCart,
-    testinghere
+    addToCart
 };
