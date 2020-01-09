@@ -1,12 +1,13 @@
 var product = require('../models/product.js');
-
+const findProductByTitle = require('./db/product.js').findProductByTitle;
+const updateProductByTitle = require('./db/product.js').updateProductByTitle;
 var updatecart = (req, res, next) => {
     var testCheck = false;
     var counter = 0;
     var testInvt = 0;
     var cartinf = req.session.cart;
     var ar = [];
-    cartinf.items.forEach(function(cartitem, count) {
+    cartinf.items.forEach(function (cartitem, count) {
 
         var difference = parseInt(req.body.qtyOfProduct[cartitem.title]) - cartitem.quantity;
         quant = cartitem.quantity;
@@ -18,9 +19,9 @@ var updatecart = (req, res, next) => {
         cartitem.quantity = parseInt(req.body.qtyOfProduct[cartitem.title]);
         product.find({
             title: cartitem.title
-        }, function(err, r) {
+        }, function (err, r) {
             return r
-        }).then(function(r) {
+        }).then(function (r) {
             if (req.body[cartitem.title] > r[0].inventory_count) {
                 req.session.cart.inventory_available = false;
                 testInvt++;
@@ -94,10 +95,10 @@ var cartpage = (req, res, next) => {
     if (req.session.cart != undefined) {
         var checkingavailability = true;
         var cart_items = req.session.cart.items;
-        cart_items.forEach(function(item, i) {
+        cart_items.forEach(function (item, i) {
             product.find({
                 title: item.title
-            }, function(err, prod) {
+            }, function (err, prod) {
                 if (prod[0].inventory_count < item.quantity) {
                     /*
                     if quantity entered by user is more than the
@@ -126,38 +127,33 @@ var cartpage = (req, res, next) => {
     }
 }
 
-var checkoutpage = (req, res, next) => {
+var checkoutpage = async (req, res, next) => {
     if (req.session.cart == null) {
         res.json({
             message: 'empty cart'
         })
     } else if (req.session.cart.inventory_available) {
-        var cart_items_checkout = req.session.cart;
-        var checkout_items = Object.assign({}, cart_items_checkout);
-        checkout_items.items.forEach(function(d) {
-            product.find({
-                title: d.title
-            }, function(err, re) {
-                // update the inventory of the product
-                product.update({
-                    title: d.title
-                }, {
-                    $set: {
-                        inventory_count: re[0].inventory_count - d.quantity
-                    }
-                }, function(err, checking) {})
-            })
-        })
+        var cartItemsCheckout = req.session.cart;
+        var checkoutItems = Object.assign({}, cartItemsCheckout);
+        for (item of checkoutItems.items) {
+            try {
+                var prod = await findProductByTitle(item.title);
+                var updatedProd = await updateProductByTitle(item.title, { inventory_count: prod[0].inventory_count - item.quantity });
+            }
+            catch (err) {
+                // need to store the logs somewhere
+                return;
+            }
+        }
         // set the session to null after getting checkout information
         req.session.cart = null;
-        //res.render('checkout', {checkoutitem: checkout_items.items, total_price: checkout_items.total_price});
         res.json({
-            checkoutitems: checkout_items.items,
-            total_price: checkout_items.total_price
+            checkoutitems: checkoutItems.items,
+            total_price: checkoutItems.total_price
         })
     } else {
         res.json({
-            message: 'inventory error '
+            error: 'inventory error'
         })
     }
 }
