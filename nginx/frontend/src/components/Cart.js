@@ -10,7 +10,7 @@ class Cart extends Component {
 			checkoutUpdate: true,
 			cartitems: [],
 			updatedQuantity: '',
-			quantityOfProductInCart: '',
+			updProdInCart: '',
 			checkoutInventory: true
 		}
 		this.updateCart = this.updateCart.bind(this);
@@ -29,44 +29,50 @@ class Cart extends Component {
 				}
 				else {
 					this.setState({ checkoutInventory: data.checkout, total_price: data.total_price, cartitems: data.cartitems });
-					var listOfProducts = {};
-					for (var i in data.cartitems) {
-						var product = data.cartitems[i];
-						listOfProducts[product.title] = product.quantity;
-					}
-					this.setState({ quantityOfProductInCart: listOfProducts });
-
 				}
 			})
 
 	}
 
 	updateQuantity(event) {
-		this.setState({ checkoutUpdate: false });
-		var updatedObj = {};
-		updatedObj[event.target.name] = event.target.value;
-		this.setState({ quantityOfProductInCart: { ...this.state.quantityOfProductInCart, ...updatedObj } });
-
-
+		const updCartItems = Object.assign([], this.state.cartitems);
+		var prodInCart = updCartItems.find(item => item.title === event.target.name);
+		const qtyOfProdInCart = prodInCart.quantity;
+		if (event.target.value !== qtyOfProdInCart) {
+			prodInCart.quantity = event.target.value;
+			this.setState({ cartItems: prodInCart, checkoutUpdate: false });
+			const updatedObj = {};
+			updatedObj[event.target.name] = event.target.value;
+			this.setState({ updProdInCart: { ...this.state.updProdInCart, ...updatedObj } });
+		}
 	}
 
 	updateCart(event) {
 		event.preventDefault();
 		this.setState({ checkoutUpdate: true });
-		var qtyOfProduct = this.state.quantityOfProductInCart;
+		var updatedProducts = this.state.updProdInCart;
 		fetch('/updatecart', {
 			method: 'POST',
 			credentials: 'include',
 			headers: { 'Content-Type': 'application/json' },
 			body: (JSON.stringify({
-				qtyOfProduct
+				updatedProducts
 			})
 			)
 		})
 			.then(res => res.json())
 			.then(data => {
-				this.setState({ total_price: data.total_price });
-				this.setState({ checkoutInventory: data.checkout });
+				if (data.message === "empty cart") {
+					this.props.history.push('/emptycart');
+				}
+				else {
+					this.setState({ 
+						updProdInCart: {},
+						total_price: data.total_price, 
+						checkoutInventory: data.checkout,
+						cartitems: data.cartItems
+					});
+				}
 			})
 	}
 
@@ -91,12 +97,12 @@ class Cart extends Component {
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.cartitems.map(item =>
+							{this.state.cartitems.map((item, ind) =>
 								<tr>
 
 									<td> {item.title}  </td>
 									<td> {item.price} </td>
-									<td> <input type="text" name={item.title} defaultValue={item.quantity} onChange={this.updateQuantity} /> </td>
+									<td> <input type="number" name={item.title} key={ind} value={item.quantity} onChange={this.updateQuantity} /> </td>
 								</tr>
 							)
 							}

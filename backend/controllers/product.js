@@ -1,4 +1,6 @@
 const product = require('../models/product.js');
+const findProductByTitle = require('./db/product.js').findProductByTitle;
+const fetchProducts = require('./db/product.js').fetchProducts;
 
 async function addProductToCart(id) {
     return new Promise((resolve, reject) => {
@@ -9,13 +11,37 @@ async function addProductToCart(id) {
     });
 }
 
+async function createSampleProducts(prod) {
+    return new Promise((resolve, reject) => {
+
+        product.update({
+            title: prod.title,
+        }, {
+            $setOnInsert: prod,
+        }, {
+            upsert: true,
+        },
+            (err, prodUpdated) => {
+                console.log('Update Completed ');
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(prodUpdated)
+                }
+
+            })
+    });
+
+}
+
 addToCart = async (req, res, next) => {
     var title = '';
     var price = '';
     var productById = await addProductToCart(req.params.id);
     if (productById) {
         // if cart session undefined create new session
-        if (req.session.cart === undefined) {
+        if (!req.session.cart) {
             req.session.cart = {
                 items: [{
                     title: productById[0].title,
@@ -71,30 +97,6 @@ addToCart = async (req, res, next) => {
     }
 };
 
-async function createSampleProducts(prod) {
-    return new Promise((resolve, reject) => {
-
-        product.update({
-            title: prod.title,
-        }, {
-            $setOnInsert: prod,
-        }, {
-            upsert: true,
-        },
-            (err, prodUpdated) => {
-                console.log('Update Completed ');
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(prodUpdated)
-                }
-
-            })
-    });
-
-}
-
 createsampleproducts = async (req, res, next) => {
     const products = [{
         title: 'test-product-1',
@@ -113,27 +115,6 @@ createsampleproducts = async (req, res, next) => {
     const getAllProducts = await fetchProducts();
     res.json(getAllProducts);
 };
-
-
-async function fetchProducts() {
-    return new Promise((resolve, reject) => {
-        product.find({}, (err, prod) => {
-            if (err) reject(err);
-            else resolve(prod);
-        });
-    });
-}
-
-async function findProductByTitle(title) {
-    return new Promise((resolve, reject) => {
-        product.find({ title }, (err, prod) => {
-            if (err) reject(err);
-            else {
-                resolve(prod)
-            }
-        })
-    })
-}
 
 createcustomproduct = async (req, res, next) => {
     const productExistWithTitle = await findProductByTitle(req.body.title);
@@ -154,7 +135,7 @@ createcustomproduct = async (req, res, next) => {
 };
 
 
-deletecustomproducts = (req, res) => {
+deletecustomproducts = (req, res, next) => {
     product.remove({}, (err, products) => {
         if (!err) {
             res.status(200).json({
@@ -168,7 +149,7 @@ deletecustomproducts = (req, res) => {
     });
 };
 
-productWithInventory = (req, res) => {
+productWithInventory = (req, res, next) => {
     if (req.params.check === 'available') {
         product.find({
             inventory_count: {
@@ -189,7 +170,6 @@ productWithInventory = (req, res) => {
         window.location.href = '/notfound';
     }
 };
-
 
 module.exports = {
     deletecustomproducts,
