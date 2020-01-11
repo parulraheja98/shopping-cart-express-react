@@ -11,6 +11,30 @@ async function addProductToCart(id) {
     });
 }
 
+async function createSampleProducts(prod) {
+    return new Promise((resolve, reject) => {
+
+        product.update({
+            title: prod.title,
+        }, {
+            $setOnInsert: prod,
+        }, {
+            upsert: true,
+        },
+            (err, prodUpdated) => {
+                console.log('Update Completed ');
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(prodUpdated)
+                }
+
+            })
+    });
+
+}
+
 addToCart = async (req, res, next) => {
     var title = '';
     var price = '';
@@ -72,30 +96,6 @@ addToCart = async (req, res, next) => {
         });
     }
 };
-
-async function createSampleProducts(prod) {
-    return new Promise((resolve, reject) => {
-
-        product.update({
-            title: prod.title,
-        }, {
-            $setOnInsert: prod,
-        }, {
-            upsert: true,
-        },
-            (err, prodUpdated) => {
-                console.log('Update Completed ');
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(prodUpdated)
-                }
-
-            })
-    });
-
-}
 
 createsampleproducts = async (req, res, next) => {
     const products = [{
