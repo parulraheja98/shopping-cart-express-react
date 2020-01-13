@@ -2,8 +2,8 @@ var express = require('express'),
     handlebars = require('express-handlebars').create({
         defaultLayout: 'main'
     });
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://mongo:27017/newdock');
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://parulraheja98:boldtest12345@ds153566.mlab.com:53566/salon-appointment');
 
 var app = express();
 var cors = require('cors');
@@ -95,14 +95,6 @@ app.get('/createsampleproducts', productController.createsampleproducts);
  *
  */
 app.get('/fetchproducts/:check', productController.productWithInventory);
-/**
- * Get all the products created with or without inventory
- * Displays the title , price and inventory of product
- *
- */
-
-app.get('/fetchproducts', productController.fetchproducts)
-
 
 /**
  * Update the quantity of product when in the cart
@@ -163,13 +155,6 @@ app.get('/clearsession', function(req, res) {
 app.get('/checkoutpage', cartController.checkoutpage);
 
 app.get('/productpage', productController.createsampleproducts);
-
-app.get('/test', function(req, res) {
-    res.json({
-        testing: 'check'
-    })
-})
-
 
 app.listen(app.get('port'), function() {
     console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate');
