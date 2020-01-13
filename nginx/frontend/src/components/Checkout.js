@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Table, Alert } from 'react-bootstrap';
-import '../App.css';
+import { Alert } from 'react-bootstrap';
+import StyledTable from './styles/Table.js';
 
 class Checkout extends Component {
 
@@ -32,7 +32,7 @@ class Checkout extends Component {
         return (
 
             <div className="container-main">
-                <Table className='product-display'>
+                <StyledTable>
                     <thead>
                         <tr>
                             <td> Title </td>
@@ -52,13 +52,13 @@ class Checkout extends Component {
                         )
                         }
                         <tr border='2'>
-                            <td colspan='3'> <Alert variant='success'> Total Price is  {this.state.total_price} </Alert> </td>
+                            <td colSpan='3'> <Alert variant='success'> Total Price is  {this.state.total_price} </Alert> </td>
                         </tr>
                         <tr>
-                            <td colspan='3'> <a href='/'> Click here to go back to the products page  </a></td>
+                            <td colSpan='3'> <a href='/'> Click here to go back to the products page  </a></td>
                         </tr>
                     </tbody>
-                </Table>
+                </StyledTable>
             </div>
         )
     }

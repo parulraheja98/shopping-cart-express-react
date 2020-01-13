@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from 'react-bootstrap';
+import StyledTable from './styles/Table.js';
 
 class Cart extends Component {
 
@@ -88,7 +88,7 @@ class Cart extends Component {
 
 			<div className="container-main">
 				<form>
-					<Table className='product-display'>
+					<StyledTable className='product-display'>
 						<thead>
 							<tr>
 								<td> Title </td>
@@ -117,12 +117,12 @@ class Cart extends Component {
 							</tr>
 							<tr>
 								{this.state.checkoutInventory ?
-									<td colspan='3'> </td>
-									: <td colspan='3'> Product Out of Inventory </td>
+									<td colSpan='3'> </td>
+									: <td colSpan='3'> Product Out of Inventory </td>
 								}
 							</tr>
 						</tbody>
-					</Table>
+					</StyledTable>
 				</form>
 			</div>
 
