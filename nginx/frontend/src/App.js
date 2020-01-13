@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {Switch,Route} from 'react-router';
 import {BrowserRouter} from 'react-router-dom';
-import './App.css';
 import Home from './components/Home.js';
 import Cart from './components/Cart.js';
 import Checkout from './components/Checkout.js';

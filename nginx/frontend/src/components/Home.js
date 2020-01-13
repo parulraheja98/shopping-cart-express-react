@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from 'react-bootstrap';
-import '../App.css';
+import StyledTable from './styles/Table.js';
 
 class Home extends Component {
 
@@ -33,7 +32,7 @@ class Home extends Component {
         return (
 
             <div className="container-main">
-                <Table className='product-display'>
+                <StyledTable>
                     <thead>
                         <tr>
                             <td> Title </td>
@@ -57,8 +56,7 @@ class Home extends Component {
                         )
                         }
                     </tbody>
-
-                </Table>
+                </StyledTable>
             </div>
         )
     }
